@@ -38,7 +38,18 @@ function App() {
   }, []);
 
   return (
-    <>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: 24,
+        backgroundColor: "#333333",
+        borderRadius: 8,
+        gap: 24,
+      }}
+    >
       <button
         onClick={() =>
           authenticated ? logout() : login({ loginMethods: ["wallet"] })
@@ -54,20 +65,42 @@ function App() {
               user?.wallet?.address?.slice(-4)}
           </>
           {score}
-          <>
-            <image />
-            <image />
-          </>
-          <>
-            {state == "fighting" ||
-              (state == "complete" &&
-                battleSequences.map((sequence, index) => (
+          <div
+            style={{
+              display: "flex",
+              gap: 16,
+              alignItems: "center",
+            }}
+          >
+            <image
+              style={{
+                height: 256,
+                width: 256,
+                backgroundColor: "blue",
+                borderRadius: 24,
+              }}
+            />
+            VS
+            <image
+              style={{
+                height: 256,
+                width: 256,
+                backgroundColor: "red",
+                borderRadius: 24,
+              }}
+            />
+          </div>
+          {(battleSequences.length && state == "fighting") ||
+            (state == "complete" && (
+              <>
+                {battleSequences.map((sequence, index) => (
                   <div key={index}>
                     Turn: {sequence.turn}, Action: {sequence.action}, Damage:{" "}
                     {sequence.damage}, Player: {sequence.player}
                   </div>
-                )))}
-          </>
+                ))}
+              </>
+            ))}
           <button
             onClick={() =>
               state == "idle"
@@ -89,7 +122,7 @@ function App() {
           </button>
         </>
       )}
-    </>
+    </div>
   );
 }
 
