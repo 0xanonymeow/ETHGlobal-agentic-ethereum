@@ -16,14 +16,40 @@ function App() {
       player: "user" | "opponent";
     }>
   >([]);
+  const [result, setResult] = useState<string>("");
 
   const fetchNFTs = () => {};
-  const onSelectNFT = () => {
+  const onStart = () => {
     setState("prepare");
   };
-  const onFight = () => {
+  const onFight = async () => {
     setState("fighting");
     setBattleSequences([]);
+
+    try {
+      const response = await fetch("http://localhost:8000/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: "Simulate a battle of random NFT fight",
+        }),
+      });
+
+      const data = await response.json();
+      if (data && data.response) {
+        console.log(data.response);
+        setResult(data.response);
+        // You can still handle sequences if needed
+        if (data.sequences) {
+          setBattleSequences(data.sequences);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching battle simulation:", error);
+      setState("complete");
+    }
   };
   const onFightEnd = () => {
     setState("complete");
@@ -65,7 +91,7 @@ function App() {
               user?.wallet?.address?.slice(-4)}
           </>
           {score}
-          <div
+          {/* <div
             style={{
               display: "flex",
               gap: 16,
@@ -89,8 +115,8 @@ function App() {
                 borderRadius: 24,
               }}
             />
-          </div>
-          {(battleSequences.length && state == "fighting") ||
+          </div> */}
+          {/* {(battleSequences.length && state == "fighting") ||
             (state == "complete" && (
               <>
                 {battleSequences.map((sequence, index) => (
@@ -100,11 +126,17 @@ function App() {
                   </div>
                 ))}
               </>
+            ))} */}
+          {state == "fighting" ||
+            (state == "complete" && (
+              <div style={{ whiteSpace: "pre-wrap", maxWidth: "800px" }}>
+                {result}
+              </div>
             ))}
           <button
             onClick={() =>
               state == "idle"
-                ? onSelectNFT()
+                ? onStart()
                 : state == "prepare"
                 ? onFight()
                 : state == "complete"
@@ -113,7 +145,7 @@ function App() {
             }
           >
             {state == "idle"
-              ? "Select"
+              ? "Start"
               : state == "prepare"
               ? "Fight"
               : state == "complete"
